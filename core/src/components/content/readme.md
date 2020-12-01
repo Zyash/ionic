@@ -1,8 +1,16 @@
 # ion-content
 
-Content component provides an easy to use content area with some useful methods
+The content component provides an easy to use content area with some useful methods
 to control the scrollable area. There should only be one content in a single
-view component.
+view.
+
+Content, along with many other Ionic components, can be customized to modify its padding, margin, and more using the global styles provided in the [CSS Utilities](/docs/layout/css-utilities) or by individually styling it using CSS and the available [CSS Custom Properties](#css-custom-properties).
+
+
+## Fixed Content
+
+In order to place elements outside of the scrollable area, `slot="fixed"` can be added to the element. This will absolutely position the element placing it in the top left. In order to place the element in a different position, style it using [top, right, bottom, and left](https://developer.mozilla.org/en-US/docs/Web/CSS/position).
+
 
 <!-- Auto Generated Below -->
 
@@ -17,6 +25,11 @@ view component.
   (ionScrollStart)="logScrollStart()"
   (ionScroll)="logScrolling($event)"
   (ionScrollEnd)="logScrollEnd()">
+    <h1>Main Content</h1>
+
+    <div slot="fixed">
+      <h1>Fixed Content</h1>
+    </div>
 </ion-content>
 ```
 
@@ -24,7 +37,13 @@ view component.
 ### Javascript
 
 ```html
-<ion-content></ion-content>
+<ion-content>
+  <h1>Main Content</h1>
+
+  <div slot="fixed">
+    <h1>Fixed Content</h1>
+  </div>
+</ion-content>
 ```
 
 ```javascript
@@ -40,19 +59,62 @@ content.addEventListener('ionScrollEnd', () => console.log('scroll end'));
 
 ```tsx
 import React from 'react';
-
 import { IonContent } from '@ionic/react';
 
-const Example: React.SFC<{}> = () => (
+const ContentExample: React.FC = () => (
   <IonContent
     scrollEvents={true}
     onIonScrollStart={() => {}}
     onIonScroll={() => {}}
     onIonScrollEnd={() => {}}>
+      <h1>Main Content</h1>
+
+      <div slot="fixed">
+        <h1>Fixed Content</h1>
+      </div>
   </IonContent>
 );
+```
 
-export default Example;
+
+### Stencil
+
+```tsx
+import { Component, h } from '@stencil/core';
+
+@Component({
+  tag: 'content-example',
+  styleUrl: 'content-example.css'
+})
+export class ContentExample {
+  logScrollStart() {
+    console.log('Scroll start');
+  }
+
+  logScrolling(ev) {
+    console.log('Scrolling', ev);
+  }
+
+  logScrollEnd() {
+    console.log('Scroll end');
+  }
+
+  render() {
+    return [
+      <ion-content
+        scrollEvents={true}
+        onIonScrollStart={() => this.logScrollStart()}
+        onIonScroll={(ev) => this.logScrolling(ev)}
+        onIonScrollEnd={() => this.logScrollEnd()}>
+          <h1>Main Content</h1>
+
+          <div slot="fixed">
+            <h1>Fixed Content</h1>
+          </div>
+      </ion-content>
+    ];
+  }
+}
 ```
 
 
@@ -61,12 +123,27 @@ export default Example;
 ```html
 <template>
   <ion-content
-    :scrollEvents="true"
+    :scroll-events="true"
     @ionScrollStart="logScrollStart()"
     @ionScroll="logScrolling($event)"
     @ionScrollEnd="logScrollEnd()">
+      <h1>Main Content</h1>
+
+      <div slot="fixed">
+        <h1>Fixed Content</h1>
+      </div>
   </ion-content>
 </template>
+
+<script>
+import { IonContent } from '@ionic/vue';
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  components: { IonContent }
+});
+</script>
+
 ```
 
 
@@ -113,14 +190,6 @@ Type: `Promise<HTMLElement>`
 
 Scroll by a specified X/Y distance in the component.
 
-#### Parameters
-
-| Name       | Type     | Description                                          |
-| ---------- | -------- | ---------------------------------------------------- |
-| `x`        | `number` | The amount to scroll by on the horizontal axis.      |
-| `y`        | `number` | The amount to scroll by on the vertical axis.        |
-| `duration` | `number` | The amount of time to take scrolling by that amount. |
-
 #### Returns
 
 Type: `Promise<void>`
@@ -131,29 +200,15 @@ Type: `Promise<void>`
 
 Scroll to the bottom of the component.
 
-#### Parameters
-
-| Name       | Type     | Description                                                          |
-| ---------- | -------- | -------------------------------------------------------------------- |
-| `duration` | `number` | The amount of time to take scrolling to the bottom. Defaults to `0`. |
-
 #### Returns
 
 Type: `Promise<void>`
 
 
 
-### `scrollToPoint(x: number | null | undefined, y: number | null | undefined, duration?: number) => Promise<void>`
+### `scrollToPoint(x: number | undefined | null, y: number | undefined | null, duration?: number) => Promise<void>`
 
 Scroll to a specified X/Y location in the component.
-
-#### Parameters
-
-| Name       | Type                          | Description                                                          |
-| ---------- | ----------------------------- | -------------------------------------------------------------------- |
-| `x`        | `null \| number \| undefined` | The point to scroll to on the horizontal axis.                       |
-| `y`        | `null \| number \| undefined` | The point to scroll to on the vertical axis.                         |
-| `duration` | `number`                      | The amount of time to take scrolling to that point. Defaults to `0`. |
 
 #### Returns
 
@@ -164,12 +219,6 @@ Type: `Promise<void>`
 ### `scrollToTop(duration?: number) => Promise<void>`
 
 Scroll to the top of the component.
-
-#### Parameters
-
-| Name       | Type     | Description                                                       |
-| ---------- | -------- | ----------------------------------------------------------------- |
-| `duration` | `number` | The amount of time to take scrolling to the top. Defaults to `0`. |
 
 #### Returns
 
@@ -186,19 +235,27 @@ Type: `Promise<void>`
 | `"fixed"` | Should be used for fixed content that should not scroll.             |
 
 
+## Shadow Parts
+
+| Part           | Description                              |
+| -------------- | ---------------------------------------- |
+| `"background"` | The background of the content.           |
+| `"scroll"`     | The scrollable container of the content. |
+
+
 ## CSS Custom Properties
 
-| Name                | Description                    |
-| ------------------- | ------------------------------ |
-| `--background`      | Background of the Content      |
-| `--color`           | Color of the Content           |
-| `--keyboard-offset` | Keyboard offset of the Content |
-| `--offset-bottom`   | Offset bottom of the Content   |
-| `--offset-top`      | Offset top of the Content      |
-| `--padding-bottom`  | Padding bottom of the Content  |
-| `--padding-end`     | Padding end of the Content     |
-| `--padding-start`   | Padding start of the Content   |
-| `--padding-top`     | Padding top of the Content     |
+| Name                | Description                                                                                                |
+| ------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `--background`      | Background of the content                                                                                  |
+| `--color`           | Color of the content                                                                                       |
+| `--keyboard-offset` | Keyboard offset of the content                                                                             |
+| `--offset-bottom`   | Offset bottom of the content                                                                               |
+| `--offset-top`      | Offset top of the content                                                                                  |
+| `--padding-bottom`  | Bottom padding of the content                                                                              |
+| `--padding-end`     | Right padding if direction is left-to-right, and left padding if direction is right-to-left of the content |
+| `--padding-start`   | Left padding if direction is left-to-right, and right padding if direction is right-to-left of the content |
+| `--padding-top`     | Top padding of the content                                                                                 |
 
 
 ----------------------------------------------

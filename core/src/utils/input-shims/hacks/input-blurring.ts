@@ -1,19 +1,21 @@
+import { addEventListener, removeEventListener } from '../../helpers';
 
 const SKIP_SELECTOR = 'input, textarea, [no-blur]';
 
-export function enableInputBlurring(doc: Document) {
+export const enableInputBlurring = () => {
   let focused = true;
   let didScroll = false;
 
-  function onScroll() {
+  const doc = document;
+  const onScroll = () => {
     didScroll = true;
-  }
+  };
 
-  function onFocusin() {
+  const onFocusin = () => {
     focused = true;
-  }
+  };
 
-  function onTouchend(ev: any) {
+  const onTouchend = (ev: any) => {
     // if app did scroll return early
     if (didScroll) {
       didScroll = false;
@@ -45,15 +47,15 @@ export function enableInputBlurring(doc: Document) {
         active.blur();
       }
     }, 50);
-  }
+  };
 
-  doc.addEventListener('ionScrollStart', onScroll);
+  addEventListener(doc, 'ionScrollStart', onScroll);
   doc.addEventListener('focusin', onFocusin, true);
   doc.addEventListener('touchend', onTouchend, false);
 
   return () => {
-    doc.removeEventListener('ionScrollStart', onScroll, true);
+    removeEventListener(doc, 'ionScrollStart', onScroll, true);
     doc.removeEventListener('focusin', onFocusin, true);
     doc.removeEventListener('touchend', onTouchend, false);
   };
-}
+};

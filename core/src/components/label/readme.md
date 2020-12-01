@@ -27,7 +27,7 @@ Label is a wrapper element that can be used in combination with `ion-item`, `ion
 </ion-item>
 
 <ion-item>
-  <ion-label text-wrap>
+  <ion-label class="ion-text-wrap">
     Multi-line text that should wrap when it is too long
     to fit on one line in the item.
   </ion-label>
@@ -70,20 +70,19 @@ Label is a wrapper element that can be used in combination with `ion-item`, `ion
 
 ```tsx
 import React from 'react';
+import { IonLabel, IonItem, IonInput, IonToggle, IonCheckbox, IonContent } from '@ionic/react';
 
-import { IonLabel, IonItem, IonInput, IonToggle, IonCheckbox } from '@ionic/react';
-
-const Example: React.SFC<{}> = () => (
-  <>
+export const LabelExample: React.FC = () => (
+  <IonContent>
     {/*-- Default Label --*/}
-    <IonLabel>Label</IonLabel>
+    <IonLabel>Label</IonLabel><br />
 
     {/*-- Label Colors --*/}
-    <IonLabel color="primary">Primary Label</IonLabel>
-    <IonLabel color="secondary">Secondary Label</IonLabel>
-    <IonLabel color="danger">Danger Label</IonLabel>
-    <IonLabel color="light">Light Label</IonLabel>
-    <IonLabel color="dark">Dark Label</IonLabel>
+    <IonLabel color="primary">Primary Label</IonLabel><br />
+    <IonLabel color="secondary">Secondary Label</IonLabel><br />
+    <IonLabel color="danger">Danger Label</IonLabel><br />
+    <IonLabel color="light">Light Label</IonLabel><br />
+    <IonLabel color="dark">Dark Label</IonLabel><br />
 
     {/*-- Item Labels --*/}
     <IonItem>
@@ -91,7 +90,7 @@ const Example: React.SFC<{}> = () => (
     </IonItem>
 
     <IonItem>
-      <IonLabel text-wrap>
+      <IonLabel className="ion-text-wrap">
         Multi-line text that should wrap when it is too long
         to fit on one line in the item.
       </IonLabel>
@@ -127,10 +126,78 @@ const Example: React.SFC<{}> = () => (
       <IonCheckbox slot="start" checked />
       <IonLabel>Checkbox</IonLabel>
     </IonItem>
-  </>
+  </IonContent>
 );
+```
 
-export default Example;
+
+### Stencil
+
+```tsx
+import { Component, h } from '@stencil/core';
+
+@Component({
+  tag: 'label-example',
+  styleUrl: 'label-example.css'
+})
+export class LabelExample {
+  render() {
+    return [
+      // Default Label
+      <ion-label>Label</ion-label>,
+
+      // Label Colors
+      <ion-label color="primary">Primary Label</ion-label>,
+      <ion-label color="secondary">Secondary Label</ion-label>,
+      <ion-label color="danger">Danger Label</ion-label>,
+      <ion-label color="light">Light Label</ion-label>,
+      <ion-label color="dark">Dark Label</ion-label>,
+
+      // Item Labels
+      <ion-item>
+        <ion-label>Default Item</ion-label>
+      </ion-item>,
+
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          Multi-line text that should wrap when it is too long
+          to fit on one line in the item.
+        </ion-label>
+      </ion-item>,
+
+      // Input Labels
+      <ion-item>
+        <ion-label>Default Input</ion-label>
+        <ion-input></ion-input>
+      </ion-item>,
+
+      <ion-item>
+        <ion-label position="fixed">Fixed</ion-label>
+        <ion-input></ion-input>
+      </ion-item>,
+
+      <ion-item>
+        <ion-label position="floating">Floating</ion-label>
+        <ion-input></ion-input>
+      </ion-item>,
+
+      <ion-item>
+        <ion-label position="stacked">Stacked</ion-label>
+        <ion-input></ion-input>
+      </ion-item>,
+
+      <ion-item>
+        <ion-label>Toggle</ion-label>
+        <ion-toggle slot="end" checked={true}></ion-toggle>
+      </ion-item>,
+
+      <ion-item>
+        <ion-checkbox slot="start" checked={true}></ion-checkbox>
+        <ion-label>Checkbox</ion-label>
+      </ion-item>
+    ];
+  }
+}
 ```
 
 
@@ -154,7 +221,7 @@ export default Example;
   </ion-item>
 
   <ion-item>
-    <ion-label text-wrap>
+    <ion-label class="ion-text-wrap">
       Multi-line text that should wrap when it is too long
       to fit on one line in the item.
     </ion-label>
@@ -191,6 +258,27 @@ export default Example;
     <ion-label>Checkbox</ion-label>
   </ion-item>
 </template>
+
+<script>
+import { 
+  IonCheckbox, 
+  IonInput, 
+  IonItem, 
+  IonLabel,
+  IonToggle
+} from '@ionic/vue';
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  components: { 
+    IonCheckbox, 
+    IonInput, 
+    IonItem, 
+    IonLabel,
+    IonToggle
+  }
+});
+</script>
 ```
 
 
@@ -210,6 +298,19 @@ export default Example;
 | --------- | ------------------ |
 | `--color` | Color of the label |
 
+
+## Dependencies
+
+### Used by
+
+ - ion-select-popover
+
+### Graph
+```mermaid
+graph TD;
+  ion-select-popover --> ion-label
+  style ion-label fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

@@ -1,8 +1,7 @@
-import { Component, ComponentInterface, Event, EventEmitter, Listen, Prop } from '@stencil/core';
+import { Component, ComponentInterface, Event, EventEmitter, Host, Listen, Prop, h } from '@stencil/core';
 
-import { Mode } from '../../interface';
+import { getIonMode } from '../../global/ionic-global';
 import { GESTURE_CONTROLLER } from '../../utils/gesture';
-import { now } from '../../utils/helpers';
 
 @Component({
   tag: 'ion-backdrop',
@@ -13,14 +12,10 @@ import { now } from '../../utils/helpers';
   shadow: true
 })
 export class Backdrop implements ComponentInterface {
-  mode!: Mode;
 
-  private lastClick = -10000;
   private blocker = GESTURE_CONTROLLER.createBlocker({
     disableScroll: true
   });
-
-  @Prop({ context: 'document' }) doc!: Document;
 
   /**
    * If `true`, the backdrop will be visible.
@@ -42,28 +37,19 @@ export class Backdrop implements ComponentInterface {
    */
   @Event() ionBackdropTap!: EventEmitter<void>;
 
-  componentDidLoad() {
+  connectedCallback() {
     if (this.stopPropagation) {
       this.blocker.block();
     }
   }
 
-  componentDidUnload() {
-    this.blocker.destroy();
-  }
-
-  @Listen('touchstart', { passive: false, capture: true })
-  protected onTouchStart(ev: TouchEvent) {
-    this.lastClick = now(ev);
-    this.emitTap(ev);
+  disconnectedCallback() {
+    this.blocker.unblock();
   }
 
   @Listen('click', { passive: false, capture: true })
-  @Listen('mousedown', { passive: false, capture: true })
   protected onMouseDown(ev: TouchEvent) {
-    if (this.lastClick < now(ev) - 2500) {
-      this.emitTap(ev);
-    }
+    this.emitTap(ev);
   }
 
   private emitTap(ev: Event) {
@@ -76,14 +62,19 @@ export class Backdrop implements ComponentInterface {
     }
   }
 
-  hostData() {
-    return {
-      tabindex: '-1',
-      class: {
-        [`${this.mode}`]: true,
-        'backdrop-hide': !this.visible,
-        'backdrop-no-tappable': !this.tappable,
-      }
-    };
+  render() {
+    const mode = getIonMode(this);
+    return (
+      <Host
+        tabindex="-1"
+        aria-hidden="true"
+        class={{
+          [mode]: true,
+          'backdrop-hide': !this.visible,
+          'backdrop-no-tappable': !this.tappable,
+        }}
+      >
+      </Host>
+    );
   }
 }

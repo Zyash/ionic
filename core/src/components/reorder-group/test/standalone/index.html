@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="ltr">
+<html lang="en" dir="ltr">
 
 <head>
   <meta charset="UTF-8">
@@ -8,8 +8,8 @@
   <link href="../../../../../css/core.css" rel="stylesheet">
   <link href="../../../../../scripts/testing/styles.css" rel="stylesheet">
   <script src="../../../../../scripts/testing/scripts.js"></script>
-  <script src="../../../../../dist/ionic.js"></script>
-</head>
+  <script nomodule src="../../../../../dist/ionic/ionic.js"></script>
+  <script type="module" src="../../../../../dist/ionic/ionic.esm.js"></script></head>
 
 <body>
   <ion-reorder-group disabled="false">
@@ -29,8 +29,8 @@
     </div>
 
     <div>
-      Item 4 (default ion-reorder)
-      <ion-reorder></ion-reorder>
+      Item 4 (custom ion-reorder)
+      <ion-reorder class="reorder-part"></ion-reorder>
     </div>
 
     <div>
@@ -61,5 +61,11 @@
     </ion-reorder>
 
   </ion-reorder-group>
+  <style>
+    .reorder-part::part(icon) {
+      color: purple;
+      opacity: 1;
+    }
+  </style>
 </body>
 </html>

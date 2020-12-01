@@ -1,7 +1,10 @@
-import { Component, ComponentInterface, Listen } from '@stencil/core';
+import { Component, ComponentInterface, Element, Host, Listen, h } from '@stencil/core';
 
-import { Mode } from '../../interface';
+import { getIonMode } from '../../global/ionic-global';
 
+/**
+ * @part icon - The icon of the reorder handle (uses ion-icon).
+ */
 @Component({
   tag: 'ion-reorder',
   styleUrls: {
@@ -11,28 +14,30 @@ import { Mode } from '../../interface';
   shadow: true
 })
 export class Reorder implements ComponentInterface {
-
-  mode!: Mode;
+  @Element() el!: HTMLIonReorderElement;
 
   @Listen('click', { capture: true })
   onClick(ev: Event) {
-    ev.preventDefault();
-    ev.stopImmediatePropagation();
-  }
+    const reorderGroup = this.el.closest('ion-reorder-group');
 
-  hostData() {
-    return {
-      class: {
-        [`${this.mode}`]: true,
-      }
-    };
+    ev.preventDefault();
+
+    // Only stop event propagation if the reorder is inside of an enabled
+    // reorder group. This allows interaction with clickable children components.
+    if (!reorderGroup || !reorderGroup.disabled) {
+      ev.stopImmediatePropagation();
+    }
   }
 
   render() {
+    const mode = getIonMode(this);
+    const reorderIcon = mode === 'ios' ? 'reorder-three-outline' : 'reorder-two-sharp';
     return (
-      <slot>
-        <ion-icon name="reorder" lazy={false} class="reorder-icon" />
-      </slot>
+      <Host class={mode}>
+        <slot>
+          <ion-icon name={reorderIcon} lazy={false} class="reorder-icon" part="icon" />
+        </slot>
+      </Host>
     );
   }
 

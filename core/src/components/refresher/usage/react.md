@@ -1,19 +1,20 @@
 ```tsx
 import React from 'react';
-
 import { IonContent, IonRefresher, IonRefresherContent } from '@ionic/react';
+import { RefresherEventDetail } from '@ionic/core';
+import { chevronDownCircleOutline } from 'ionicons/icons';
 
-function doRefresh(event: CustomEvent) {
+function doRefresh(event: CustomEvent<RefresherEventDetail>) {
   console.log('Begin async operation');
 
   setTimeout(() => {
     console.log('Async operation has ended');
-    event.target.complete();
+    event.detail.complete();
   }, 2000);
 }
 
-const Example: React.SFC<{}> = () => (
-  <>
+export const RefresherExample: React.FC = () => (
+  <IonContent>
     {/*-- Default Refresher --*/}
     <IonContent>
       <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
@@ -32,15 +33,13 @@ const Example: React.SFC<{}> = () => (
     <IonContent>
       <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
         <IonRefresherContent
-          pullingIcon="arrow-dropdown"
+          pullingIcon={chevronDownCircleOutline}
           pullingText="Pull to refresh"
           refreshingSpinner="circles"
           refreshingText="Refreshing...">
         </IonRefresherContent>
       </IonRefresher>
     </IonContent>
-  </>
-  }
+  </IonContent>
 );
-
-export default Example
+```

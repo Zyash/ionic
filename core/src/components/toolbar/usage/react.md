@@ -1,33 +1,39 @@
 ```tsx
 import React from 'react';
-
 import { IonToolbar, IonTitle, IonButtons, IonBackButton, IonButton, IonIcon, IonMenuButton, IonSearchbar, IonSegment, IonSegmentButton } from '@ionic/react';
+import { personCircle, search, helpCircle, star, create, ellipsisHorizontal, ellipsisVertical } from 'ionicons/icons';
 
-const Example: React.SFC<{}> = () => (
-  <>
+export const ToolbarExample: React.FC = () => (
   <IonToolbar>
     <IonTitle>Title Only</IonTitle>
   </IonToolbar>
 
   <IonToolbar>
     <IonButtons slot="start">
-      <IonBackButton goBack={() => {}} />
+      <IonBackButton defaultHref="/" />
     </IonButtons>
     <IonTitle>Back Button</IonTitle>
   </IonToolbar>
 
   <IonToolbar>
+    <IonTitle size="small">Small Title above a Default Title</IonTitle>
+  </IonToolbar>
+  <IonToolbar>
+    <IonTitle>Default Title</IonTitle>
+  </IonToolbar>
+
+  <IonToolbar>
     <IonButtons slot="secondary">
       <IonButton>
-        <IonIcon slot="icon-only" name="contact" />
+        <IonIcon slot="icon-only" icon={personCircle} />
       </IonButton>
       <IonButton>
-        <IonIcon slot="icon-only" name="search" />
+        <IonIcon slot="icon-only" icon={search} />
       </IonButton>
     </IonButtons>
     <IonButtons slot="primary">
       <IonButton color="secondary">
-        <IonIcon slot="icon-only" name="more" />
+        <IonIcon slot="icon-only" ios={ellipsisHorizontal} md={ellipsisVertical} />
       </IonButton>
     </IonButtons>
     <IonTitle>Default Buttons</IonTitle>
@@ -36,7 +42,7 @@ const Example: React.SFC<{}> = () => (
   <IonToolbar>
     <IonButtons slot="secondary">
       <IonButton fill="solid">
-        <IonIcon slot="start" name="contact" />
+        <IonIcon slot="start" icon={personCircle} />
         Contact
       </IonButton>
     </IonButtons>
@@ -44,7 +50,7 @@ const Example: React.SFC<{}> = () => (
     <IonButtons slot="primary">
       <IonButton fill="solid" color="secondary">
         Help
-        <IonIcon slot="end" name="help-circle" />
+        <IonIcon slot="end" icon={helpCircle} />
       </IonButton>
     </IonButtons>
   </IonToolbar>
@@ -52,7 +58,7 @@ const Example: React.SFC<{}> = () => (
   <IonToolbar>
     <IonButtons slot="secondary">
       <IonButton fill="outline">
-        <IonIcon slot="start" name="star" />
+        <IonIcon slot="start" icon={star} />
         Star
       </IonButton>
     </IonButtons>
@@ -60,33 +66,28 @@ const Example: React.SFC<{}> = () => (
     <IonButtons slot="primary">
       <IonButton color="danger" fill="outline">
         Edit
-        <IonIcon slot="end" name="create" />
+        <IonIcon slot="end" icon={create} />
       </IonButton>
     </IonButtons>
   </IonToolbar>
 
   <IonToolbar>
     <IonButtons slot="secondary">
-      <IonButton>
-        Account
-      </IonButton>
+      <IonButton>Account</IonButton>
     </IonButtons>
     <IonButtons slot="primary">
-      <IonButton color="danger">
-        Edit
-      </IonButton>
+      <IonButton color="danger">Edit</IonButton>
     </IonButtons>
     <IonTitle>Text Only Buttons</IonTitle>
   </IonToolbar>
 
   <IonToolbar>
     <IonButtons slot="start">
-      <IonMenuButton autoHide={false}></IonMenuButton>
-
+      <IonMenuButton autoHide={false} />
     </IonButtons>
     <IonButtons slot="secondary">
       <IonButton>
-        <IonIcon slot="icon-only" name="star" />
+        <IonIcon slot="icon-only" icon={star} />
       </IonButton>
     </IonButtons>
     <IonTitle>Left side menu toggle</IonTitle>
@@ -95,48 +96,45 @@ const Example: React.SFC<{}> = () => (
   <IonToolbar>
     <IonButtons slot="primary">
       <IonButton onClick={() => {}}>
-        <IonIcon slot="icon-only" name="star" />
+        <IonIcon slot="icon-only" icon={star} />
       </IonButton>
     </IonButtons>
     <IonTitle>Right side menu toggle</IonTitle>
     <IonButtons slot="end">
-      <IonMenuButton autoHide={false}></IonMenuButton>
-
+      <IonMenuButton autoHide={false} />
     </IonButtons>
   </IonToolbar>
 
   <IonToolbar>
     <IonButtons slot="primary">
       <IonButton onClick={() => {}}>
-        <IonIcon slot="icon-only" name="search" />
+        <IonIcon slot="icon-only" icon={search} />
       </IonButton>
     </IonButtons>
-    <IonSearchbar placeholder="Search Favorites"></IonSearchbar>
+    <IonSearchbar placeholder="Search Favorites" />
   </IonToolbar>
 
   <IonToolbar>
-    <IonSegment>
-      <IonSegmentButton value="all" checked>
+    <IonSegment value="all">
+      <IonSegmentButton value="all">
         All
       </IonSegmentButton>
-      <IonSegmentButton value="favorites">
-        Favorites
-      </IonSegmentButton>
+      <IonSegmentButton value="favorites">Favorites</IonSegmentButton>
     </IonSegment>
   </IonToolbar>
 
   <IonToolbar color="secondary">
     <IonButtons slot="secondary">
       <IonButton>
-        <IonIcon slot="icon-only" name="contact" />
+        <IonIcon slot="icon-only" icon={personCircle} />
       </IonButton>
       <IonButton>
-        <IonIcon slot="icon-only" name="search" />
+        <IonIcon slot="icon-only" icon={search} />
       </IonButton>
     </IonButtons>
     <IonButtons slot="primary">
       <IonButton color="primary">
-        <IonIcon slot="icon-only" name="more" />
+        <IonIcon slot="icon-only" ios={ellipsisHorizontal} md={ellipsisVertical} />
       </IonButton>
     </IonButtons>
     <IonTitle>Secondary Toolbar</IonTitle>
@@ -145,21 +143,18 @@ const Example: React.SFC<{}> = () => (
   <IonToolbar color="dark">
     <IonButtons slot="secondary">
       <IonButton>
-        <IonIcon slot="icon-only" name="contact" />
+        <IonIcon slot="icon-only" icon={personCircle} />
       </IonButton>
       <IonButton>
-        <IonIcon slot="icon-only" name="search" />
+        <IonIcon slot="icon-only" icon={search} />
       </IonButton>
     </IonButtons>
     <IonButtons slot="primary">
       <IonButton color="danger">
-        <IonIcon slot="icon-only" name="more" />
+        <IonIcon slot="icon-only" ios={ellipsisHorizontal} md={ellipsisVertical} />
       </IonButton>
     </IonButtons>
     <IonTitle>Dark Toolbar</IonTitle>
   </IonToolbar>
-  </>
 );
-
-export default Example;
 ```

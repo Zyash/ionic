@@ -1,16 +1,15 @@
 import { IonicConfig } from '../interface';
 
 export class Config {
+  private m = new Map<keyof IonicConfig, any>();
 
-  private m: Map<keyof IonicConfig, any>;
-
-  constructor(configObj: IonicConfig) {
+  reset(configObj: IonicConfig) {
     this.m = new Map<keyof IonicConfig, any>(Object.entries(configObj) as any);
   }
 
   get(key: keyof IonicConfig, fallback?: any): any {
     const value = this.m.get(key);
-    return (value !== undefined) ? value : fallback;
+    return value !== undefined ? value : fallback;
   }
 
   getBoolean(key: keyof IonicConfig, fallback = false): boolean {
@@ -34,41 +33,44 @@ export class Config {
   }
 }
 
-export function configFromSession(win: Window): any {
+export const config = /*@__PURE__*/ new Config();
+
+export const configFromSession = (win: Window): any => {
   try {
     const configStr = win.sessionStorage.getItem(IONIC_SESSION_KEY);
     return configStr !== null ? JSON.parse(configStr) : {};
   } catch (e) {
     return {};
   }
-}
+};
 
-export function saveConfig(win: Window, config: any) {
+export const saveConfig = (win: Window, c: any) => {
   try {
-    win.sessionStorage.setItem(IONIC_SESSION_KEY, JSON.stringify(config));
+    win.sessionStorage.setItem(IONIC_SESSION_KEY, JSON.stringify(c));
   } catch (e) {
     return;
   }
-}
+};
 
-export function configFromURL(win: Window) {
-  const config: any = {};
-  win.location.search.slice(1)
+export const configFromURL = (win: Window) => {
+  const configObj: any = {};
+  win.location.search
+    .slice(1)
     .split('&')
     .map(entry => entry.split('='))
     .map(([key, value]) => [decodeURIComponent(key), decodeURIComponent(value)])
     .filter(([key]) => startsWith(key, IONIC_PREFIX))
     .map(([key, value]) => [key.slice(IONIC_PREFIX.length), value])
     .forEach(([key, value]) => {
-      config[key] = value;
+      configObj[key] = value;
     });
 
-  return config;
-}
+  return configObj;
+};
 
-function startsWith(input: string, search: string): boolean {
+const startsWith = (input: string, search: string): boolean => {
   return input.substr(0, search.length) === search;
-}
+};
 
 const IONIC_PREFIX = 'ionic:';
 const IONIC_SESSION_KEY = 'ionic-persist-config';

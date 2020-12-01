@@ -40,7 +40,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./backdrop-example.css'],
 })
 export class BackdropExample {
-  backdropDismiss = false;
+  enableBackdropDismiss = false;
   showBackdrop = false;
   shouldPropagate = false;
 }
@@ -78,11 +78,10 @@ backdrop.stopPropagation = false;
 
 ```tsx
 import React from 'react';
+import { IonBackdrop, IonContent } from '@ionic/react';
 
-import { IonBackdrop } from '@ionic/react';
-
-const Example: React.SFC<{}> = () => (
-  <>
+export const BackdropExample: React.FC = () => (
+  <IonContent>
     {/*-- Default backdrop --*/}
     <IonBackdrop />
 
@@ -95,15 +94,49 @@ const Example: React.SFC<{}> = () => (
     {/*-- Backdrop with propagation --*/}
     <IonBackdrop stopPropagation={false} />
 
-    <IonBackdrop
-      tappable={true}
-      visible={true}
-      stopPropagation={true}
-    />
-  </>
+    <IonBackdrop tappable={true} visible={true} stopPropagation={true} />
+  </IonContent>
 );
+```
 
-export default Example;
+
+### Stencil
+
+```tsx
+import { Component, h } from '@stencil/core';
+
+@Component({
+  tag: 'backdrop-example',
+  styleUrl: 'backdrop-example.css'
+})
+export class BackdropExample {
+  render() {
+    const enableBackdropDismiss = false;
+    const showBackdrop = false;
+    const shouldPropagate = false;
+
+    return [
+      // Default backdrop
+      <ion-backdrop></ion-backdrop>,
+
+      // Backdrop that is not tappable
+      <ion-backdrop tappable={false}></ion-backdrop>,
+
+      // Backdrop that is not visible
+      <ion-backdrop visible={false}></ion-backdrop>,
+
+      // Backdrop with propagation
+      <ion-backdrop stopPropagation={false}></ion-backdrop>,
+
+      // Backdrop that sets dynamic properties
+      <ion-backdrop
+        tappable={enableBackdropDismiss}
+        visible={showBackdrop}
+        stopPropagation={shouldPropagate}>
+      </ion-backdrop>
+    ];
+  }
+}
 ```
 
 
@@ -121,25 +154,30 @@ export default Example;
   <ion-backdrop visible="false"></ion-backdrop>
 
   <!-- Backdrop with propagation -->
-  <ion-backdrop stopPropagation="false"></ion-backdrop>
+  <ion-backdrop stop-propagation="false"></ion-backdrop>
 
   <!-- Backdrop that sets dynamic properties -->
   <ion-backdrop
     :tappable="enableBackdropDismiss"
     :visible="showBackdrop"
-    :stopPropagation="shouldPropagate">
+    :stop-propagation="shouldPropagate">
   </ion-backdrop>
 </template>
 
-<script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+<script>
+import { IonBackdrop } from '@ionic/vue';
+import { defineComponent } from 'vue';
 
-  @Component()
-  export default class Example extends Vue {
-    backdropDismiss = false;
-    showBackdrop = false;
-    shouldPropagate = false;
+export default defineComponent({
+  components: { IonBackdrop },
+  setup() {
+    return {
+      enableBackdropDismiss: true,
+      showBackdrop: true,
+      shouldPropagate: true
+    }
   }
+});
 </script>
 ```
 
@@ -160,6 +198,31 @@ export default Example;
 | ---------------- | ------------------------------------ | ------------------- |
 | `ionBackdropTap` | Emitted when the backdrop is tapped. | `CustomEvent<void>` |
 
+
+## Dependencies
+
+### Used by
+
+ - [ion-action-sheet](../action-sheet)
+ - [ion-alert](../alert)
+ - [ion-loading](../loading)
+ - [ion-menu](../menu)
+ - [ion-modal](../modal)
+ - [ion-picker](../picker)
+ - [ion-popover](../popover)
+
+### Graph
+```mermaid
+graph TD;
+  ion-action-sheet --> ion-backdrop
+  ion-alert --> ion-backdrop
+  ion-loading --> ion-backdrop
+  ion-menu --> ion-backdrop
+  ion-modal --> ion-backdrop
+  ion-picker --> ion-backdrop
+  ion-popover --> ion-backdrop
+  style ion-backdrop fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

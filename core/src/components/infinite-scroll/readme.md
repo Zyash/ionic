@@ -111,59 +111,183 @@ function toggleInfiniteScroll() {
 ```
 
 
-### React
+### Stencil
 
 ```tsx
-import React, { Component } from 'react';
+import { Component, State, h } from '@stencil/core';
 
-import { IonButton, IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonList } from '@ionic/react';
+@Component({
+  tag: 'infinite-scroll-example',
+  styleUrl: 'infinite-scroll-example.css'
+})
+export class InfiniteScrollExample {
+  private infiniteScroll: HTMLIonInfiniteScrollElement;
 
-export default class Example extends Component<Props, State> {
+  @State() data = [];
 
-  ionInfiniteScrollRef: React.RefObject<HTMLionInfiniteScrollElement>
-
-  constructor() {
-    this.ionInfiniteScrollRef = React.createRef<HTMLionInfiniteScrollElement>();
+  componentWillLoad() {
+    this.pushData();
   }
 
-  loadData = (ev: MouseEvent) => {
+  pushData() {
+    const max = this.data.length + 20;
+    const min = max - 20;
+
+    for (var i = min; i < max; i++) {
+      this.data.push('Item ' + i);
+    }
+
+    // Stencil does not re-render when pushing to an array
+    // so create a new copy of the array
+    // https://stenciljs.com/docs/reactive-data#handling-arrays-and-objects
+    this.data = [
+      ...this.data
+    ];
+  }
+
+  loadData(ev) {
     setTimeout(() => {
-      console.log('Done');
+      this.pushData();
+      console.log('Loaded data');
       ev.target.complete();
 
       // App logic to determine if all data is loaded
       // and disable the infinite scroll
-      if (data.length == 1000) {
+      if (this.data.length == 1000) {
         ev.target.disabled = true;
       }
     }, 500);
   }
 
-  toggleInfiniteScroll = () => {
-    this.ionInfiniteScrollRef.disabled = !this.ionInfiniteScrollRef.disabled;
+  toggleInfiniteScroll() {
+    this.infiniteScroll.disabled = !this.infiniteScroll.disabled;
   }
 
   render() {
-    return (
-      <>
-        <IonContent>
-          <IonButton onClick="toggleInfiniteScroll()" expand="block">
-            Toggle Infinite Scroll
-          </IonButton>
+    return [
+      <ion-content>
+        <ion-button onClick={() => this.toggleInfiniteScroll()} expand="block">
+          Toggle Infinite Scroll
+        </ion-button>
 
-          <IonList></IonList>
+        <ion-list>
+          {this.data.map(item =>
+            <ion-item>
+              <ion-label>{item}</ion-label>
+            </ion-item>
+          )}
+        </ion-list>
 
-          <IonInfiniteScroll threshold="100px" onIonInfinite={(ev) => this.loadData(ev)}>
-            <IonInfiniteScrollContent
-              loadingSpinner="bubbles"
-              loadingText="Loading more data...">
-            </IonInfiniteScrollContent>
-          </IonInfiniteScroll>
-        </IonContent>
-      </>
-    );
+        <ion-infinite-scroll
+          ref={el => this.infiniteScroll = el}
+          onIonInfinite={(ev) => this.loadData(ev)}>
+          <ion-infinite-scroll-content
+            loadingSpinner="bubbles"
+            loadingText="Loading more data...">
+          </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+      </ion-content>
+    ];
   }
 }
+```
+
+
+### Vue
+
+```html
+<template>
+  <ion-page>
+    <ion-content class="ion-padding">
+      <ion-button @click="toggleInfiniteScroll" expand="block">
+        Toggle Infinite Scroll
+      </ion-button>
+    
+      <ion-list>
+        <ion-item v-for="item in items" :key="item">
+          <ion-label>{{ item }}</ion-label>
+        </ion-item>
+      </ion-list>
+    
+      <ion-infinite-scroll
+        @ionInfinite="loadData($event)" 
+        threshold="100px" 
+        id="infinite-scroll"
+        :disabled="isDisabled"
+      >
+        <ion-infinite-scroll-content
+          loading-spinner="bubbles"
+          loading-text="Loading more data...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </ion-content>
+  </ion-page>
+</template>
+
+<script lang="ts">
+import { 
+  IonButton,
+  IonContent, 
+  IonInfiniteScroll, 
+  IonInfiniteScrollContent,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonPage
+ } from '@ionic/vue';
+import { defineComponent, ref } from 'vue';
+ 
+export default defineComponent({
+  components: {
+    IonButton,
+    IonContent, 
+    IonInfiniteScroll, 
+    IonInfiniteScrollContent,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonPage
+  },
+  setup() {
+    const isDisabled = ref(false);
+    const toggleInfiniteScroll = () => {
+      isDisabled.value = !isDisabled.value;
+    }
+    const items = ref([]);
+    const pushData = () => {
+      const max = items.value.length + 20;
+      const min = max - 20;
+      for (let i = min; i < max; i++) {
+        items.value.push(i);
+      }
+    }
+    
+    const loadData = (ev: CustomEvent) => {
+      setTimeout(() => {
+        pushData();
+        console.log('Loaded data');
+        ev.target.complete();
+  
+        // App logic to determine if all data is loaded
+        // and disable the infinite scroll
+        if (items.value.length == 1000) {
+          ev.target.disabled = true;
+        }
+      }, 500);
+    }
+    
+    pushData();
+    
+    return {
+      isDisabled,
+      toggleInfiniteScroll,
+      loadData,
+      items
+    }
+  }
+});
+
+</script>
 ```
 
 
@@ -186,7 +310,7 @@ export default class Example extends Component<Props, State> {
 
 ## Methods
 
-### `complete() => void`
+### `complete() => Promise<void>`
 
 Call `complete()` within the `ionInfinite` output event handler when
 your async operation has completed. For example, the `loading`
@@ -199,7 +323,7 @@ to `enabled`.
 
 #### Returns
 
-Type: `void`
+Type: `Promise<void>`
 
 
 

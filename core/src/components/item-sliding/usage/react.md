@@ -1,16 +1,16 @@
 ```tsx
 import React from 'react';
+import { IonList, IonItemSliding, IonItem, IonLabel, IonItemOptions, IonItemOption, IonIcon, IonNote } from '@ionic/react';
 
-import { IonList, IonItemSliding, IonItem, IonLabel, IonItemOptions, IonItemOption } from '@ionic/react';
+import { heart, trash, star, archive, ellipsisHorizontal, ellipsisVertical } from 'ionicons/icons';
 
-const Example: React.SFC<{}> = () => (
-
+export const ItemSlidingExample: React.FC = () => (
 <IonList>
   {/* Sliding item with text options on both sides */}
   <IonItemSliding>
     <IonItemOptions side="start">
-      <IonItemOption onClick={favorite(item)}>Favorite</IonItemOption>
-      <IonItemOption color="danger" onClick={share(item)}>Share</IonItemOption>
+      <IonItemOption onClick={() => console.log('favorite clicked')}>Favorite</IonItemOption>
+      <IonItemOption color="danger" onClick={() => console.log('share clicked')}>Share</IonItemOption>
     </IonItemOptions>
 
     <IonItem>
@@ -18,7 +18,7 @@ const Example: React.SFC<{}> = () => (
     </IonItem>
 
     <IonItemOptions side="end">
-      <IonItemOption onClick={unread(item)}>Unread</IonItemOption>
+      <IonItemOption onClick={() => console.log('unread clicked')}>Unread</IonItemOption>
     </IonItemOptions>
   </IonItemSliding>
 
@@ -56,16 +56,16 @@ const Example: React.SFC<{}> = () => (
 
     <IonItemOptions side="start">
       <IonItemOption>
-        <IonIcon slot="icon-only" name="heart"></IonIcon>
+        <IonIcon slot="icon-only" icon={heart} />
       </IonItemOption>
     </IonItemOptions>
 
     <IonItemOptions side="end">
       <IonItemOption color="danger">
-        <IonIcon slot="icon-only" name="trash"></IonIcon>
+        <IonIcon slot="icon-only" icon={trash} />
       </IonItemOption>
       <IonItemOption>
-        <IonIcon slot="icon-only" name="star"></IonIcon>
+        <IonIcon slot="icon-only" icon={star} />
       </IonItemOption>
     </IonItemOptions>
   </IonItemSliding>
@@ -79,11 +79,11 @@ const Example: React.SFC<{}> = () => (
     </IonItem>
     <IonItemOptions>
       <IonItemOption color="primary">
-        <IonIcon slot="start" name="more"></IonIcon>
+        <IonIcon slot="start" ios={ellipsisHorizontal} md={ellipsisVertical}></IonIcon>
         More
       </IonItemOption>
       <IonItemOption color="secondary">
-        <IonIcon slot="start" name="archive"></IonIcon>
+        <IonIcon slot="start" icon={archive} />
         Archive
       </IonItemOption>
     </IonItemOptions>
@@ -98,11 +98,11 @@ const Example: React.SFC<{}> = () => (
     </IonItem>
     <IonItemOptions>
       <IonItemOption color="primary">
-        <IonIcon slot="end" name="more"></IonIcon>
+        <IonIcon slot="end" ios={ellipsisHorizontal} md={ellipsisVertical}></IonIcon>
         More
       </IonItemOption>
       <IonItemOption color="secondary">
-        <IonIcon slot="end" name="archive"></IonIcon>
+        <IonIcon slot="end" icon={archive} />
         Archive
       </IonItemOption>
     </IonItemOptions>
@@ -117,11 +117,11 @@ const Example: React.SFC<{}> = () => (
     </IonItem>
     <IonItemOptions>
       <IonItemOption color="primary">
-        <IonIcon slot="top" name="more"></IonIcon>
+        <IonIcon slot="top" ios={ellipsisHorizontal} md={ellipsisVertical}></IonIcon>
         More
       </IonItemOption>
       <IonItemOption color="secondary">
-        <IonIcon slot="top" name="archive"></IonIcon>
+        <IonIcon slot="top" icon={archive} />
         Archive
       </IonItemOption>
     </IonItemOptions>
@@ -136,18 +136,15 @@ const Example: React.SFC<{}> = () => (
     </IonItem>
     <IonItemOptions>
       <IonItemOption color="primary">
-        <IonIcon slot="bottom" name="more"></IonIcon>
+        <IonIcon slot="bottom" ios={ellipsisHorizontal} md={ellipsisVertical}></IonIcon>
         More
       </IonItemOption>
       <IonItemOption color="secondary">
-        <IonIcon slot="bottom" name="archive"></IonIcon>
+        <IonIcon slot="bottom" icon={archive} />
         Archive
       </IonItemOption>
     </IonItemOptions>
   </IonItemSliding>
 </IonList>
-
 );
-
-export default Example;
 ```

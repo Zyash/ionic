@@ -19,7 +19,9 @@ radio button within the same group.
 <ion-list>
   <ion-radio-group>
     <ion-list-header>
-      Auto Manufacturers
+      <ion-label>
+        Auto Manufacturers
+      </ion-label>
     </ion-list-header>
 
     <ion-item>
@@ -55,46 +57,99 @@ radio button within the same group.
 
 ```tsx
 import React from 'react';
+import { IonList, IonRadioGroup, IonListHeader, IonLabel, IonRadio, IonItem, IonContent } from '@ionic/react';
 
-import { IonList, IonRadioGroup, IonListHeader, IonLabel, IonRadio, IonItem } from '@ionic/react';
+export const RadioGroupExample: React.FC = () => (
+  <IonContent>
+    <IonList>
+      <IonRadioGroup>
+        <IonListHeader>
+          <IonLabel>
+            Auto Manufacturers
+          </IonLabel>
+        </IonListHeader>
 
-const Example: React.SFC<{}> = () => (
+        <IonItem>
+          <IonLabel>Cord</IonLabel>
+          <IonRadio value="cord" />
+        </IonItem>
 
-  <IonList>
-    <IonRadioGroup>
-      <IonListHeader>
-        Auto Manufacturers
-      </IonListHeader>
+        <IonItem>
+          <IonLabel>Duesenberg</IonLabel>
+          <IonRadio value="duesenberg" />
+        </IonItem>
 
-      <IonItem>
-        <IonLabel>Cord</IonLabel>
-        <IonRadio value="cord"></IonRadio>
-      </IonItem>
+        <IonItem>
+          <IonLabel>Hudson</IonLabel>
+          <IonRadio value="hudson" />
+        </IonItem>
 
-      <IonItem>
-        <IonLabel>Duesenberg</IonLabel>
-        <IonRadio value="duesenberg"></IonRadio>
-      </IonItem>
+        <IonItem>
+          <IonLabel>Packard</IonLabel>
+          <IonRadio value="packard" />
+        </IonItem>
 
-      <IonItem>
-        <IonLabel>Hudson</IonLabel>
-        <IonRadio value="hudson"></IonRadio>
-      </IonItem>
-
-      <IonItem>
-        <IonLabel>Packard</IonLabel>
-        <IonRadio value="packard"></IonRadio>
-      </IonItem>
-
-      <IonItem>
-        <IonLabel>Studebaker</IonLabel>
-        <IonRadio value="studebaker"></IonRadio>
-      </IonItem>
-    </IonRadioGroup>
-  </IonList>
+        <IonItem>
+          <IonLabel>Studebaker</IonLabel>
+          <IonRadio value="studebaker" />
+        </IonItem>
+      </IonRadioGroup>
+    </IonList>
+  </IonContent>
 );
+```
 
-export default Example
+
+### Stencil
+
+```tsx
+import { Component, h } from '@stencil/core';
+
+@Component({
+  tag: 'radio-group-example',
+  styleUrl: 'radio-group-example.css'
+})
+export class RadioGroupExample {
+  render() {
+    return [
+      <ion-list>
+        <ion-radio-group>
+          <ion-list-header>
+            <ion-label>
+              Auto Manufacturers
+            </ion-label>
+          </ion-list-header>
+
+          <ion-item>
+            <ion-label>Cord</ion-label>
+            <ion-radio value="cord"></ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Duesenberg</ion-label>
+            <ion-radio value="duesenberg"></ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Hudson</ion-label>
+            <ion-radio value="hudson"></ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Packard</ion-label>
+            <ion-radio value="packard"></ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Studebaker</ion-label>
+            <ion-radio value="studebaker"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
+    ];
+  }
+}
+```
 
 
 ### Vue
@@ -104,7 +159,9 @@ export default Example
   <ion-list>
     <ion-radio-group>
       <ion-list-header>
-        Auto Manufacturers
+        <ion-label>
+          Auto Manufacturers
+        </ion-label>
       </ion-list-header>
 
       <ion-item>
@@ -134,6 +191,29 @@ export default Example
     </ion-radio-group>
   </ion-list>
 </template>
+
+<script>
+import { 
+  IonItem, 
+  IonLabel, 
+  IonList, 
+  IonListHeader, 
+  IonRadio, 
+  IonRadioGroup
+} from '@ionic/vue';
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  components: {
+    IonItem, 
+    IonLabel, 
+    IonList, 
+    IonListHeader, 
+    IonRadio, 
+    IonRadioGroup
+  }
+});
+</script>
 ```
 
 
@@ -153,6 +233,19 @@ export default Example
 | ----------- | ----------------------------------- | ------------------------------------------ |
 | `ionChange` | Emitted when the value has changed. | `CustomEvent<RadioGroupChangeEventDetail>` |
 
+
+## Dependencies
+
+### Used by
+
+ - ion-select-popover
+
+### Graph
+```mermaid
+graph TD;
+  ion-select-popover --> ion-radio-group
+  style ion-radio-group fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

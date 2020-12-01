@@ -1,8 +1,12 @@
-import { Component, ComponentInterface, Element, Event, EventEmitter, Prop, State, Watch } from '@stencil/core';
+import { Component, ComponentInterface, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
 
-import { Color, Mode, StyleEventDetail } from '../../interface';
+import { getIonMode } from '../../global/ionic-global';
+import { Color, StyleEventDetail } from '../../interface';
 import { createColorClasses } from '../../utils/theme';
 
+/**
+ * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
+ */
 @Component({
   tag: 'ion-label',
   styleUrls: {
@@ -12,6 +16,8 @@ import { createColorClasses } from '../../utils/theme';
   scoped: true
 })
 export class Label implements ComponentInterface {
+  private inRange = false;
+
   @Element() el!: HTMLElement;
 
   /**
@@ -22,14 +28,15 @@ export class Label implements ComponentInterface {
   @Prop() color?: Color;
 
   /**
-   * The mode determines which platform styles to use.
-   */
-  @Prop() mode!: Mode;
-
-  /**
    * The position determines where and how the label behaves inside an item.
    */
   @Prop() position?: 'fixed' | 'stacked' | 'floating';
+
+  /**
+   * Emitted when the color changes.
+   * @internal
+   */
+  @Event() ionColor!: EventEmitter<StyleEventDetail>;
 
   /**
    * Emitted when the styles change.
@@ -40,8 +47,10 @@ export class Label implements ComponentInterface {
   @State() noAnimate = false;
 
   componentWillLoad() {
+    this.inRange = !!this.el.closest('ion-range');
     this.noAnimate = (this.position === 'floating');
     this.emitStyle();
+    this.emitColor();
   }
 
   componentDidLoad() {
@@ -52,28 +61,51 @@ export class Label implements ComponentInterface {
     }
   }
 
+  @Watch('color')
+  colorChanged() {
+    this.emitColor();
+  }
+
   @Watch('position')
   positionChanged() {
     this.emitStyle();
   }
 
-  private emitStyle() {
-    const position = this.position;
-    this.ionStyle.emit({
-      'label': true,
-      [`label-${position}`]: position !== undefined
+  private emitColor() {
+    const { color } = this;
+
+    this.ionColor.emit({
+      'item-label-color': color !== undefined,
+      [`ion-color-${color}`]: color !== undefined
     });
   }
 
-  hostData() {
+  private emitStyle() {
+    const { inRange, position } = this;
+
+    // If the label is inside of a range we don't want
+    // to override the classes added by the label that
+    // is a direct child of the item
+    if (!inRange) {
+      this.ionStyle.emit({
+        'label': true,
+        [`label-${position}`]: position !== undefined
+      });
+    }
+  }
+
+  render() {
     const position = this.position;
-    return {
-      class: {
-        ...createColorClasses(this.color),
-        [`${this.mode}`]: true,
-        [`label-${position}`]: position !== undefined,
-        [`label-no-animate`]: (this.noAnimate)
-      }
-    };
+    const mode = getIonMode(this);
+    return (
+      <Host
+        class={createColorClasses(this.color, {
+          [mode]: true,
+          [`label-${position}`]: position !== undefined,
+          [`label-no-animate`]: (this.noAnimate)
+        })}
+      >
+      </Host>
+    );
   }
 }

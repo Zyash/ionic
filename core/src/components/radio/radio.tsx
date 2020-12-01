@@ -1,9 +1,16 @@
-import { Component, ComponentInterface, Element, Event, EventEmitter, Listen, Prop, Watch } from '@stencil/core';
+import { Component, ComponentInterface, Element, Event, EventEmitter, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 
-import { Color, Mode, RadioChangeEventDetail, StyleEventDetail } from '../../interface';
-import { findItemLabel } from '../../utils/helpers';
+import { getIonMode } from '../../global/ionic-global';
+import { Color, StyleEventDetail } from '../../interface';
+import { addEventListener, getAriaLabel, removeEventListener } from '../../utils/helpers';
 import { createColorClasses, hostContext } from '../../utils/theme';
 
+/**
+ * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
+ *
+ * @part container - The container for the radio mark.
+ * @part mark - The checkmark or dot used to indicate the checked state.
+ */
 @Component({
   tag: 'ion-radio',
   styleUrls: {
@@ -13,10 +20,21 @@ import { createColorClasses, hostContext } from '../../utils/theme';
   shadow: true
 })
 export class Radio implements ComponentInterface {
-
   private inputId = `ion-rb-${radioButtonIds++}`;
+  private radioGroup: HTMLIonRadioGroupElement | null = null;
 
-  @Element() el!: HTMLElement;
+  @Element() el!: HTMLIonRadioElement;
+
+  /**
+   * If `true`, the radio is selected.
+   */
+  @State() checked = false;
+
+  /**
+   * The tabindex of the radio button.
+   * @internal
+   */
+  @State() buttonTabindex = -1;
 
   /**
    * The color to use from your application's color palette.
@@ -24,11 +42,6 @@ export class Radio implements ComponentInterface {
    * For more information on colors, see [theming](/docs/theming/basics).
    */
   @Prop() color?: Color;
-
-  /**
-   * The mode determines which platform styles to use.
-   */
-  @Prop() mode!: Mode;
 
   /**
    * The name of the control, which is submitted with the form data.
@@ -41,43 +54,15 @@ export class Radio implements ComponentInterface {
   @Prop() disabled = false;
 
   /**
-   * If `true`, the radio is selected.
-   */
-  @Prop({ mutable: true }) checked = false;
-
-  /**
    * the value of the radio.
    */
-  @Prop({ mutable: true }) value?: any | null;
-
-  /**
-   * Emitted when the radio loads.
-   * @internal
-   */
-  @Event() ionRadioDidLoad!: EventEmitter<void>;
-
-  /**
-   * Emitted when the radio unloads.
-   * @internal
-   */
-  @Event() ionRadioDidUnload!: EventEmitter<void>;
+  @Prop() value?: any | null;
 
   /**
    * Emitted when the styles change.
    * @internal
    */
   @Event() ionStyle!: EventEmitter<StyleEventDetail>;
-
-  /**
-   * Emitted when the radio button is selected.
-   */
-  @Event() ionSelect!: EventEmitter<RadioChangeEventDetail>;
-
-  /**
-   * Emitted when checked radio button is selected.
-   * @internal
-   */
-  @Event() ionDeselect!: EventEmitter<RadioChangeEventDetail>;
 
   /**
    * Emitted when the radio button has focus.
@@ -89,56 +74,58 @@ export class Radio implements ComponentInterface {
    */
   @Event() ionBlur!: EventEmitter<void>;
 
-  @Watch('color')
-  colorChanged() {
-    this.emitStyle();
+  /** @internal */
+  @Method()
+  async setFocus(ev: any) {
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    this.el.focus();
   }
 
-  @Watch('checked')
-  checkedChanged(isChecked: boolean) {
-    if (isChecked) {
-      this.ionSelect.emit({
-        checked: true,
-        value: this.value
-      });
-    }
-    this.emitStyle();
+  /** @internal */
+  @Method()
+  async setButtonTabindex(value: number) {
+    this.buttonTabindex = value;
   }
 
-  @Watch('disabled')
-  disabledChanged() {
-    this.emitStyle();
-  }
-
-  componentWillLoad() {
+  connectedCallback() {
     if (this.value === undefined) {
       this.value = this.inputId;
     }
-    this.emitStyle();
-  }
-
-  componentDidLoad() {
-    this.ionRadioDidLoad.emit();
-  }
-
-  componentDidUnload() {
-    this.ionRadioDidUnload.emit();
-  }
-
-  @Listen('click')
-  onClick() {
-    if (this.checked) {
-      this.ionDeselect.emit();
-    } else {
-      this.checked = true;
+    const radioGroup = this.radioGroup = this.el.closest('ion-radio-group');
+    if (radioGroup) {
+      this.updateState();
+      addEventListener(radioGroup, 'ionChange', this.updateState);
     }
   }
 
-  private emitStyle() {
+  disconnectedCallback() {
+    const radioGroup = this.radioGroup;
+    if (radioGroup) {
+      removeEventListener(radioGroup, 'ionChange', this.updateState);
+      this.radioGroup = null;
+    }
+  }
+
+  componentWillLoad() {
+    this.emitStyle();
+  }
+
+  @Watch('color')
+  @Watch('checked')
+  @Watch('disabled')
+  emitStyle() {
     this.ionStyle.emit({
       'radio-checked': this.checked,
       'interactive-disabled': this.disabled,
     });
+  }
+
+  private updateState = () => {
+    if (this.radioGroup) {
+      this.checked = this.radioGroup.value === this.value;
+    }
   }
 
   private onFocus = () => {
@@ -149,42 +136,44 @@ export class Radio implements ComponentInterface {
     this.ionBlur.emit();
   }
 
-  hostData() {
-    const { inputId, disabled, checked, color, el } = this;
-    const labelId = inputId + '-lbl';
-    const label = findItemLabel(el);
-    if (label) {
-      label.id = labelId;
-    }
-    return {
-      'role': 'radio',
-      'aria-disabled': disabled ? 'true' : null,
-      'aria-checked': `${checked}`,
-      'aria-labelledby': labelId,
-      class: {
-        ...createColorClasses(color),
-        [`${this.mode}`]: true,
-        'in-item': hostContext('ion-item', el),
-        'interactive': true,
-        'radio-checked': checked,
-        'radio-disabled': disabled,
-      }
-    };
-  }
-
   render() {
-    return [
-      <div class="radio-icon">
-        <div class="radio-inner"/>
-      </div>,
-      <button
-        type="button"
+    const { inputId, disabled, checked, color, el, buttonTabindex } = this;
+    const mode = getIonMode(this);
+    const { label, labelId, labelText } = getAriaLabel(el, inputId);
+
+    return (
+      <Host
+        aria-checked={`${checked}`}
+        aria-hidden={disabled ? 'true' : null}
+        aria-labelledby={label ? labelId : null}
+        role="radio"
+        tabindex={buttonTabindex}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
-        disabled={this.disabled}
+        class={createColorClasses(color, {
+          [mode]: true,
+          'in-item': hostContext('ion-item', el),
+          'interactive': true,
+          'radio-checked': checked,
+          'radio-disabled': disabled,
+        })}
       >
-      </button>,
-    ];
+        <div class="radio-icon" part="container">
+          <div class="radio-inner" part="mark" />
+          <div class="radio-ripple"></div>
+        </div>
+        <label htmlFor={inputId}>
+          {labelText}
+        </label>
+        <input
+          type="radio"
+          checked={checked}
+          disabled={disabled}
+          tabindex="-1"
+          id={inputId}
+        />
+      </Host>
+    );
   }
 }
 

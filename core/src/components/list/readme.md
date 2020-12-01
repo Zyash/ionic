@@ -145,11 +145,10 @@ Lists support several interactions including swiping items to reveal options, dr
 
 ```tsx
 import React from 'react';
+import { IonList, IonItem, IonLabel, IonInput, IonToggle, IonRadio, IonCheckbox, IonItemSliding, IonItemOption, IonItemOptions, IonContent } from '@ionic/react';
 
-import { IonList, IonItem, IonLabel, IonInput, IonToggle, IonRadio, IonCheckbox, IonItemSliding, IonItemOption, IonItemOptions } from '@ionic/react';
-
-const Example: React.SFC<{}> = () => (
-  <>
+export const ListExample: React.FC = () => (
+  <IonContent>
     {/*-- List of Text Items --*/}
     <IonList>
       <IonItem>
@@ -209,10 +208,89 @@ const Example: React.SFC<{}> = () => (
         </IonItemOptions>
       </IonItemSliding>
     </IonList>
-  </>
+  </IonContent>
 );
+```
 
-export default Example;
+
+### Stencil
+
+```tsx
+import { Component, h } from '@stencil/core';
+
+@Component({
+  tag: 'list-example',
+  styleUrl: 'list-example.css'
+})
+export class ListExample {
+  unread(ev: Event) {
+    console.log('Item is unread', ev);
+  }
+
+  render() {
+    return [
+      // List of Text Items
+      <ion-list>
+        <ion-item>
+          <ion-label>Pokémon Yellow</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>Mega Man X</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>The Legend of Zelda</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>Pac-Man</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>Super Mario World</ion-label>
+        </ion-item>
+      </ion-list>,
+
+      // List of Input Items
+      <ion-list>
+        <ion-item>
+          <ion-label>Input</ion-label>
+          <ion-input></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>Toggle</ion-label>
+          <ion-toggle slot="end"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>Radio</ion-label>
+          <ion-radio slot="end"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label>Checkbox</ion-label>
+          <ion-checkbox slot="start"></ion-checkbox>
+        </ion-item>
+      </ion-list>,
+
+      // List of Sliding Items
+      <ion-list>
+        <ion-item-sliding>
+          <ion-item>
+            <ion-label>Item</ion-label>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option onClick={(ev) => this.unread(ev)}>Unread</ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+
+        <ion-item-sliding>
+          <ion-item>
+            <ion-label>Item</ion-label>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option onClick={(ev) => this.unread(ev)}>Unread</ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+    ];
+  }
+}
 ```
 
 
@@ -280,6 +358,37 @@ export default Example;
     </ion-item-sliding>
   </ion-list>
 </template>
+
+<script>
+import { 
+  IonCheckbox, 
+  IonInput, 
+  IonItem, 
+  IonItemOption, 
+  IonItemOptions, 
+  IonItemSliding, 
+  IonList, 
+  IonLabel, 
+  IonRadio, 
+  IonToggle 
+} from '@ionic/vue';
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  components: { 
+    IonCheckbox, 
+    IonInput, 
+    IonItem, 
+    IonItemOption, 
+    IonItemOptions, 
+    IonItemSliding, 
+    IonList, 
+    IonLabel, 
+    IonRadio, 
+    IonToggle 
+  }
+});
+</script>
 ```
 
 
@@ -308,6 +417,19 @@ Type: `Promise<boolean>`
 
 
 
+
+## Dependencies
+
+### Used by
+
+ - ion-select-popover
+
+### Graph
+```mermaid
+graph TD;
+  ion-select-popover --> ion-list
+  style ion-list fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

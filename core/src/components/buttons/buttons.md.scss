@@ -29,30 +29,25 @@
 
 :host-context(.ion-color)::slotted(*) .button {
   --color: initial;
-  --color-activated: initial;
-  --color-focused: initial;
-  --background-focused: #{current-color(contrast, .1)};
+  --color-focused: #{current-color(contrast)};
+  --color-hover: #{current-color(contrast)};
+  --background-activated: transparent;
+  --background-focused: #{current-color(contrast)};
+  --background-hover: #{current-color(contrast)};
 }
 
 :host-context(.ion-color)::slotted(*) .button-solid {
   --background: #{current-color(contrast)};
-  --background-activated: #{current-color(contrast)};
-  --background-focused: #{current-color(contrast, .9)};
+  --background-activated: transparent;
+  --background-focused: #{current-color(shade)};
+  --background-hover: #{current-color(base)};
   --color: #{current-color(base)};
   --color-focused: #{current-color(base)};
+  --color-hover: #{current-color(base)};
 }
 
 :host-context(.ion-color)::slotted(*) .button-outline {
   --border-color: #{current-color(contrast)};
-}
-
-
-// Material Design Toolbar Default Button
-// --------------------------------------------------
-
-::slotted(*) .button {
-  --color-focused: #{$toolbar-md-color};
-  --background-focused: rgba(66, 66, 66, 0.1);
 }
 
 
@@ -73,16 +68,18 @@
 }
 
 
+::slotted(*) .button {
+  --background-hover: currentColor;
+}
+
 // Material Design Toolbar Solid Button
 // --------------------------------------------------
 
 ::slotted(*) .button-solid {
   --color: #{$toolbar-md-background};
-  --color-activated: #{$toolbar-md-background};
-  --color-focused: #{$toolbar-md-background};
   --background: #{$toolbar-md-color};
-  --background-activated: #{$toolbar-md-color};
-  --background-focused: #{$toolbar-md-color-activated};
+  --background-activated: transparent;
+  --background-focused: currentColor;
 }
 
 
@@ -91,12 +88,11 @@
 
 ::slotted(*) .button-outline {
   --color: initial;
-  --color-activated: currentColor;
-  --color-focused: #{$toolbar-md-color};
   --background: transparent;
   --background-activated: transparent;
-  --border-color: #{$toolbar-md-color};
-  --background-focused: rgba(66, 66, 66, 0.1);
+  --background-focused: currentColor;
+  --background-hover: currentColor;
+  --border-color: currentColor;
 }
 
 
@@ -105,8 +101,10 @@
 
 ::slotted(*) .button-clear {
   --color: initial;
-  --color-activated: currentColor;
   --background: transparent;
+  --background-activated: transparent;
+  --background-focused: currentColor;
+  --background-hover: currentColor;
 }
 
 

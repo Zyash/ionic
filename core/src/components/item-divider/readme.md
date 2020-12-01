@@ -1,6 +1,6 @@
 # ion-item-divider
 
-Item Dividers are block elements that can be used to separate items in a list. They are similar to list headers, but instead of being placed at the top of a list, they should go in between groups of like items.
+Item Dividers are block elements that can be used to separate items in a list. They are similar to list headers, but instead of being placed at the top of a list, they should go in between groups of items.
 
 <!-- Auto Generated Below -->
 
@@ -55,11 +55,10 @@ Item Dividers are block elements that can be used to separate items in a list. T
 
 ```tsx
 import React from 'react';
+import { IonItemDivider, IonLabel, IonList, IonItem, IonContent } from '@ionic/react';
 
-import { IonItemDivider, IonLabel, IonList, IonItem } from '@ionic/react';
-
-const Example: React.SFC<{}> = () => (
-  <>
+export const ItemDividerExample: React.FC = () => (
+  <IonContent>
     <IonItemDivider>
       <IonLabel>
         Basic Item Divider
@@ -98,10 +97,65 @@ const Example: React.SFC<{}> = () => (
       <IonItem><IonLabel>B4</IonLabel></IonItem>
       <IonItem><IonLabel>B5</IonLabel></IonItem>
     </IonList>
-  </>
+  </IonContent>
 );
+```
 
-export default Example
+
+### Stencil
+
+```tsx
+import { Component, h } from '@stencil/core';
+
+@Component({
+  tag: 'item-divider-example',
+  styleUrl: 'item-divider-example.css'
+})
+export class ItemDividerExample {
+  render() {
+    return [
+      <ion-item-divider>
+        <ion-label>
+          Basic Item Divider
+        </ion-label>
+      </ion-item-divider>,
+
+      <ion-item-divider color="secondary">
+        <ion-label>
+          Secondary Item Divider
+        </ion-label>
+      </ion-item-divider>,
+
+      //  Item Dividers in a List
+      <ion-list>
+        <ion-item-divider>
+          <ion-label>
+            Section A
+          </ion-label>
+        </ion-item-divider>
+
+        <ion-item><ion-label>A1</ion-label></ion-item>
+        <ion-item><ion-label>A2</ion-label></ion-item>
+        <ion-item><ion-label>A3</ion-label></ion-item>
+        <ion-item><ion-label>A4</ion-label></ion-item>
+        <ion-item><ion-label>A5</ion-label></ion-item>
+
+        <ion-item-divider>
+          <ion-label>
+            Section B
+          </ion-label>
+        </ion-item-divider>
+
+        <ion-item><ion-label>B1</ion-label></ion-item>
+        <ion-item><ion-label>B2</ion-label></ion-item>
+        <ion-item><ion-label>B3</ion-label></ion-item>
+        <ion-item><ion-label>B4</ion-label></ion-item>
+        <ion-item><ion-label>B5</ion-label></ion-item>
+      </ion-list>
+    ];
+  }
+}
+```
 
 
 ### Vue
@@ -147,6 +201,15 @@ export default Example
     <ion-item><ion-label>B5</ion-label></ion-item>
   </ion-list>
 </template>
+
+<script>
+import { IonItem, IonItemDivider, IonLabel } from '@ionic/vue';
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  components: { IonItem, IonItemDivider, IonLabel }
+});
+</script>
 ```
 
 
@@ -171,14 +234,18 @@ export default Example
 
 ## CSS Custom Properties
 
-| Name               | Description                        |
-| ------------------ | ---------------------------------- |
-| `--background`     | Background of the item divider     |
-| `--color`          | Color of the item divider          |
-| `--padding-bottom` | Bottom padding of the item divider |
-| `--padding-end`    | End padding of the item divider    |
-| `--padding-start`  | Start padding of the item divider  |
-| `--padding-top`    | Top padding of the item divider    |
+| Name                     | Description                                                                                                     |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `--background`           | Background of the item divider                                                                                  |
+| `--color`                | Color of the item divider                                                                                       |
+| `--inner-padding-bottom` | Bottom inner padding of the item divider                                                                        |
+| `--inner-padding-end`    | End inner padding of the item divider                                                                           |
+| `--inner-padding-start`  | Start inner padding of the item divider                                                                         |
+| `--inner-padding-top`    | Top inner padding of the item divider                                                                           |
+| `--padding-bottom`       | Bottom padding of the item divider                                                                              |
+| `--padding-end`          | Right padding if direction is left-to-right, and left padding if direction is right-to-left of the item divider |
+| `--padding-start`        | Left padding if direction is left-to-right, and right padding if direction is right-to-left of the item divider |
+| `--padding-top`          | Top padding of the item divider                                                                                 |
 
 
 ----------------------------------------------

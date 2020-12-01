@@ -1,10 +1,17 @@
-import { Component, ComponentInterface, Element, Event, EventEmitter, Listen, Prop, QueueApi, State, Watch } from '@stencil/core';
+import { Component, ComponentInterface, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
 
-import { Color, Gesture, GestureDetail, Mode, StyleEventDetail, ToggleChangeEventDetail } from '../../interface';
-import { hapticSelection } from '../../utils/haptic';
-import { findItemLabel, renderHiddenInput } from '../../utils/helpers';
+import { getIonMode } from '../../global/ionic-global';
+import { Color, Gesture, GestureDetail, StyleEventDetail, ToggleChangeEventDetail } from '../../interface';
+import { getAriaLabel, renderHiddenInput } from '../../utils/helpers';
+import { hapticSelection } from '../../utils/native/haptic';
 import { createColorClasses, hostContext } from '../../utils/theme';
 
+/**
+ * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
+ *
+ * @part track - The background track of the toggle.
+ * @part handle - The toggle handle, or knob, used to change the checked state.
+ */
 @Component({
   tag: 'ion-toggle',
   styleUrls: {
@@ -17,21 +24,12 @@ export class Toggle implements ComponentInterface {
 
   private inputId = `ion-tg-${toggleIds++}`;
   private gesture?: Gesture;
-  private buttonEl?: HTMLElement;
+  private focusEl?: HTMLElement;
   private lastDrag = 0;
 
   @Element() el!: HTMLElement;
 
-  @Prop({ context: 'queue' }) queue!: QueueApi;
-
-  @Prop({ context: 'document' }) doc!: Document;
-
   @State() activated = false;
-
-  /**
-   * The mode determines which platform styles to use.
-   */
-  @Prop() mode!: Mode;
 
   /**
    * The color to use from your application's color palette.
@@ -97,18 +95,13 @@ export class Toggle implements ComponentInterface {
   disabledChanged() {
     this.emitStyle();
     if (this.gesture) {
-      this.gesture.setDisabled(this.disabled);
+      this.gesture.enable(!this.disabled);
     }
   }
 
-  componentWillLoad() {
-    this.emitStyle();
-  }
-
-  async componentDidLoad() {
+  async connectedCallback() {
     this.gesture = (await import('../../utils/gesture')).createGesture({
       el: this.el,
-      queue: this.queue,
       gestureName: 'toggle',
       gesturePriority: 100,
       threshold: 5,
@@ -120,18 +113,15 @@ export class Toggle implements ComponentInterface {
     this.disabledChanged();
   }
 
-  componentDidUnload() {
+  disconnectedCallback() {
     if (this.gesture) {
       this.gesture.destroy();
       this.gesture = undefined;
     }
   }
 
-  @Listen('click')
-  onClick() {
-    if (this.lastDrag + 300 < Date.now()) {
-      this.checked = !this.checked;
-    }
+  componentWillLoad() {
+    this.emitStyle();
   }
 
   private emitStyle() {
@@ -148,7 +138,7 @@ export class Toggle implements ComponentInterface {
   }
 
   private onMove(detail: GestureDetail) {
-    if (shouldToggle(this.doc, this.checked, detail.deltaX, -10)) {
+    if (shouldToggle(document, this.checked, detail.deltaX, -10)) {
       this.checked = !this.checked;
       hapticSelection();
     }
@@ -166,8 +156,16 @@ export class Toggle implements ComponentInterface {
   }
 
   private setFocus() {
-    if (this.buttonEl) {
-      this.buttonEl.focus();
+    if (this.focusEl) {
+      this.focusEl.focus();
+    }
+  }
+
+  private onClick = (ev: Event) => {
+    ev.preventDefault();
+
+    if (this.lastDrag + 300 < Date.now()) {
+      this.checked = !this.checked;
     }
   }
 
@@ -179,53 +177,54 @@ export class Toggle implements ComponentInterface {
     this.ionBlur.emit();
   }
 
-  hostData() {
-    const { inputId, disabled, checked, activated, color, el } = this;
-    const labelId = inputId + '-lbl';
-    const label = findItemLabel(el);
-    if (label) {
-      label.id = labelId;
-    }
-
-    return {
-      'role': 'checkbox',
-      'aria-disabled': disabled ? 'true' : null,
-      'aria-checked': `${checked}`,
-      'aria-labelledby': labelId,
-
-      class: {
-        ...createColorClasses(color),
-        [`${this.mode}`]: true,
-        'in-item': hostContext('ion-item', el),
-        'toggle-activated': activated,
-        'toggle-checked': checked,
-        'toggle-disabled': disabled,
-        'interactive': true
-      }
-    };
-  }
-
   render() {
+    const { activated, color, checked, disabled, el, inputId, name } = this;
+    const mode = getIonMode(this);
+    const { label, labelId, labelText } = getAriaLabel(el, inputId);
     const value = this.getValue();
-    renderHiddenInput(true, this.el, this.name, (this.checked ? value : ''), this.disabled);
 
-    return [
-      <div class="toggle-icon">
-        <div class="toggle-inner"/>
-      </div>,
-      <button
-        type="button"
-        onFocus={this.onFocus}
-        onBlur={this.onBlur}
-        disabled={this.disabled}
-        ref={el => this.buttonEl = el}
+    renderHiddenInput(true, el, name, (checked ? value : ''), disabled);
+
+    return (
+      <Host
+        onClick={this.onClick}
+        aria-labelledby={label ? labelId : null}
+        aria-checked={`${checked}`}
+        aria-hidden={disabled ? 'true' : null}
+        role="switch"
+        class={createColorClasses(color, {
+          [mode]: true,
+          'in-item': hostContext('ion-item', el),
+          'toggle-activated': activated,
+          'toggle-checked': checked,
+          'toggle-disabled': disabled,
+          'interactive': true
+        })}
       >
-      </button>
-    ];
+        <div class="toggle-icon" part="track">
+          <div class="toggle-icon-wrapper">
+            <div class="toggle-inner" part="handle" />
+          </div>
+        </div>
+        <label htmlFor={inputId}>
+          {labelText}
+        </label>
+        <input
+          type="checkbox"
+          role="switch"
+          aria-checked={`${checked}`}
+          disabled={disabled}
+          id={inputId}
+          onFocus={() => this.onFocus()}
+          onBlur={() => this.onBlur()}
+          ref={focusEl => this.focusEl = focusEl}
+        />
+      </Host>
+    );
   }
 }
 
-function shouldToggle(doc: HTMLDocument, checked: boolean, deltaX: number, margin: number): boolean {
+const shouldToggle = (doc: HTMLDocument, checked: boolean, deltaX: number, margin: number): boolean => {
   const isRTL = doc.dir === 'rtl';
 
   if (checked) {
@@ -235,6 +234,6 @@ function shouldToggle(doc: HTMLDocument, checked: boolean, deltaX: number, margi
     return (!isRTL && (- margin < deltaX)) ||
       (isRTL && (margin > deltaX));
   }
-}
+};
 
 let toggleIds = 0;

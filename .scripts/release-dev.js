@@ -1,4 +1,4 @@
-const tc = require('turbocolor');
+const { cyan, red } = require('colorette');
 const semver = require('semver');
 const execa = require('execa');
 const inquirer = require('inquirer');
@@ -7,6 +7,7 @@ const fs = require('fs-extra');
 
 const common = require('./common');
 
+const DIST_NPM_TAG = 'dev';
 const DIST_TAG = 'dev';
 
 async function main() {
@@ -37,7 +38,8 @@ async function main() {
     packages.forEach(package => {
       common.prepareDevPackage(tasks, package, devVersion);
     });
-    common.publishPackages(tasks, packages, devVersion, DIST_TAG);
+    common.copyCDNLoader(tasks, devVersion);
+    common.publishPackages(tasks, packages, devVersion, DIST_NPM_TAG);
 
     const listr = new Listr(tasks);
     await listr.run();
@@ -45,7 +47,7 @@ async function main() {
     console.log(`\nionic ${devVersion} published!! 🎉\n`);
 
   } catch (err) {
-    console.log('\n', tc.red(err), '\n');
+    console.log('\n', red(err), '\n');
     process.exit(1);
   }
 
@@ -62,7 +64,7 @@ async function askDevVersion(devVersion) {
       name: 'confirm',
       value: true,
       message: () => {
-        return `Publish the dev build ${tc.cyan(devVersion)}?`;
+        return `Publish the dev build ${cyan(devVersion)}?`;
       }
     }
   ];
@@ -76,6 +78,9 @@ async function setPackageVersionChanges(packages, version) {
     if (package !== 'core') {
       const pkg = common.readPkg(package);
       common.updateDependency(pkg, '@ionic/core', version);
+      if(package === 'packages/react-router') {
+        common.updateDependency(pkg, '@ionic/react', version);
+      }
       common.writePkg(package, pkg);
     }
     const projectRoot = common.projectPath(package);
